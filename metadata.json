@@ -1,0 +1,6 @@
+{
+  "name": "일일 박스오피스",
+  "description": "KOBIS API를 활용하여 매일 업데이트되는 일일 박스오피스 순위와 영화 상세 정보를 제공하는 웹사이트입니다.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
