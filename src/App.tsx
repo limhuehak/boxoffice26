@@ -93,11 +93,22 @@ export default function App() {
       try {
         const res = await fetch(`/api/boxoffice?date=${targetDt}`);
         if (!res.ok) {
-          const errData = await res.json();
-          throw new Error(errData.error || "일일 박스오피스 데이터를 불러오는데 실패했습니다.");
+          let errorMsg = "일일 박스오피스 데이터를 불러오는데 실패했습니다.";
+          try {
+            const errData = await res.json();
+            errorMsg = errData.error || errorMsg;
+          } catch (e) {
+            errorMsg = "서버 연결에 실패하였거나 API 키 환경 변수(.env)가 설정되지 않았습니다.";
+          }
+          throw new Error(errorMsg);
         }
         
-        const data: BoxOfficeResponse = await res.json();
+        let data: BoxOfficeResponse;
+        try {
+          data = await res.json();
+        } catch (e) {
+          throw new Error("서버에서 올바르지 않은 응답 데이터 형식을 수신했습니다. KOBIS_API_KEY 환경변수를 확인하세요.");
+        }
         const list = data.boxOfficeResult?.dailyBoxOfficeList || [];
         setBoxOfficeList(list);
         setShowRange(data.boxOfficeResult?.showRange || "");
@@ -132,9 +143,19 @@ export default function App() {
       try {
         const res = await fetch(`/api/movie?movieCd=${selectedMovieCd}`);
         if (!res.ok) {
-          throw new Error("영화 상세 정보를 불러오는데 실패했습니다.");
+          let errorMsg = "영화 상세 정보를 불러오는데 실패했습니다.";
+          try {
+            const errData = await res.json();
+            errorMsg = errData.error || errorMsg;
+          } catch (e) {}
+          throw new Error(errorMsg);
         }
-        const data: MovieInfoResponse = await res.json();
+        let data: MovieInfoResponse;
+        try {
+          data = await res.json();
+        } catch (e) {
+          throw new Error("서버에서 영화 상세정보 응답 형식이 올바르지 않습니다.");
+        }
         setMovieDetail(data.movieInfoResult?.movieInfo || null);
       } catch (err: any) {
         setMovieError(err.message || "오류가 발생했습니다.");
